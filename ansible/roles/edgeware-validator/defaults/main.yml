@@ -1,0 +1,4 @@
+---
+# defaults file for edgeware-validator
+chain: edgeware
+node_name: cw

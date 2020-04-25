@@ -1,0 +1,29 @@
+[Unit]
+Description=Edgeware Node
+
+[Service]
+User=edgeware
+Group=edgeware
+ExecStart=/usr/local/bin/edgeware \
+         --name {{ node_name }}-sv-public-{{ groups['public'].index(inventory_hostname) }} \
+         --chain={{ chain }} \
+         --sentry \
+         {% if hostvars[inventory_hostname].edgeware_additional_common_flags is defined and hostvars[inventory_hostname].edgeware_additional_common_flags|length %}
+         {{ hostvars[inventory_hostname].edgeware_additional_common_flags }} \
+         {% endif %}
+         {% if hostvars[inventory_hostname].edgeware_additional_public_flags is defined and hostvars[inventory_hostname].edgeware_additional_public_flags|length %}
+         {{ hostvars[inventory_hostname].edgeware_additional_public_flags }} \
+         {% endif %}
+         {% if hostvars[inventory_hostname].loggingFilter is defined and hostvars[inventory_hostname].loggingFilter|length %}
+         -l{{ hostvars[inventory_hostname].loggingFilter }} \
+         {% endif %}
+         {% if hostvars[inventory_hostname].telemetryUrl is defined and hostvars[inventory_hostname].telemetryUrl|length %}
+         --telemetry-url '{{ hostvars[inventory_hostname].telemetryUrl }} 1'
+         {% else %}
+         --no-telemetry
+         {% endif %}
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
